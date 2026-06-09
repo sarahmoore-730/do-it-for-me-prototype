@@ -919,9 +919,9 @@
         <div>
           <div class="state-tabs">
             <button class="state-tab active" onclick="setStateLog('buttons')">Buttons</button>
-            <button class="state-tab" onclick="setStateLog('chat')">Log a nap tapped</button>
-            <button class="state-tab" onclick="setStateLog('sheet')">Sheet open</button>
-            <button class="state-tab" onclick="setStateLog('done')">Logged</button>
+            <button class="state-tab" onclick="setStateLog('sheet')">→ Log a nap</button>
+            <button class="state-tab" onclick="setStateLog('deeplink')">→ See sleep logs</button>
+            <button class="state-tab" onclick="setStateLog('autosheet')">→ Auto logging</button>
           </div>
 
           <div class="phone">
@@ -950,8 +950,8 @@
                   </div>
                 </div>
 
-                <!-- After tapping "Log a nap" -->
-                <div id="log-chat-state" style="display:none; flex-direction:column; gap:14px;">
+                <!-- Buttons with Log a nap selected -->
+                <div id="log-nap-selected" style="display:none; flex-direction:column; gap:14px;">
                   <div class="agent-row">
                     <div class="agent-avatar">🐣</div>
                     <div class="agent-bubble-wrap">
@@ -967,6 +967,44 @@
                   </div>
                 </div>
 
+                <!-- Buttons with See sleep logs selected (deep link) -->
+                <div id="log-deeplink-selected" style="display:none; flex-direction:column; gap:14px;">
+                  <div class="agent-row">
+                    <div class="agent-avatar">🐣</div>
+                    <div class="agent-bubble-wrap">
+                      <div class="agent-name">Hatch AI</div>
+                      <div class="agent-bubble">Sure — what would you like to do?
+                        <div style="display:flex; flex-direction:column; gap:7px; margin-top:10px;">
+                          <button style="background:#1e3d6b; border:1px solid #2a4a6e; color:#4a6580; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:600; cursor:default; text-align:left;">📝 Log a nap</button>
+                          <button style="background:#3dbfb8; border:1px solid #3dbfb8; color:#0a1628; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:700; cursor:default; text-align:left;">📊 See my sleep logs</button>
+                          <button style="background:#1e3d6b; border:1px solid #2a4a6e; color:#4a6580; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:600; cursor:default; text-align:left;">⚙️ Turn on / off auto sleep logging</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="record-block">
+                    <div class="record-icon">→</div>
+                    <div class="record-text">Opened <strong>Sleep Logs</strong></div>
+                  </div>
+                </div>
+
+                <!-- Buttons with Auto logging selected -->
+                <div id="log-auto-selected" style="display:none; flex-direction:column; gap:14px;">
+                  <div class="agent-row">
+                    <div class="agent-avatar">🐣</div>
+                    <div class="agent-bubble-wrap">
+                      <div class="agent-name">Hatch AI</div>
+                      <div class="agent-bubble">Sure — what would you like to do?
+                        <div style="display:flex; flex-direction:column; gap:7px; margin-top:10px;">
+                          <button style="background:#1e3d6b; border:1px solid #2a4a6e; color:#4a6580; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:600; cursor:default; text-align:left;">📝 Log a nap</button>
+                          <button style="background:#1e3d6b; border:1px solid #2a4a6e; color:#4a6580; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:600; cursor:default; text-align:left;">📊 See my sleep logs</button>
+                          <button style="background:#3dbfb8; border:1px solid #3dbfb8; color:#0a1628; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:700; cursor:default; text-align:left;">⚙️ Turn on / off auto sleep logging</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="record-block" id="log-record" style="display:none;">
                   <div class="record-icon">✓</div>
                   <div class="record-text">Nap logged — <strong>45 min</strong>, 2:10 PM</div>
@@ -976,6 +1014,29 @@
                 <div class="reply-input">Reply…</div>
                 <div class="reply-btn">↑</div>
               </div>
+              <!-- Auto logging toggle sheet -->
+              <div class="half-sheet" id="log-auto-sheet">
+                <div class="half-sheet-handle"></div>
+                <div id="log-auto-sheet-input">
+                  <div class="half-sheet-title">Auto Sleep Logging</div>
+                  <div class="half-sheet-sub">Automatically log sleep based on when your Hatch turns on and off.</div>
+                  <div class="hs-setting-row" style="margin-bottom: 20px;">
+                    <div class="hs-setting-label">Auto sleep logging</div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <span class="hs-toggle-state">Off</span>
+                      <div class="hs-toggle off"></div>
+                    </div>
+                  </div>
+                  <button class="half-sheet-btn" onclick="setStateLog('autodone')">Turn On</button>
+                  <button class="half-sheet-cancel" onclick="setStateLog('autosheet')">Cancel</button>
+                </div>
+                <div id="log-auto-sheet-success" style="display:none; text-align:center; padding: 10px 0 4px;">
+                  <div class="hs-check">✓</div>
+                  <div class="hs-title">Auto logging on.</div>
+                  <div class="hs-body">Sleep will be logged automatically based on your Hatch activity.</div>
+                </div>
+              </div>
+
               <div class="half-sheet" id="log-sheet">
                 <div class="half-sheet-handle"></div>
                 <div id="log-sheet-input">
@@ -1126,38 +1187,52 @@ function setStateLog(state) {
   const input = document.getElementById('log-sheet-input');
   const success = document.getElementById('log-sheet-success');
   const record = document.getElementById('log-record');
-  const buttons = document.getElementById('log-buttons');
-  const chatState = document.getElementById('log-chat-state');
+  const autoSheet = document.getElementById('log-auto-sheet');
+  const autoInput = document.getElementById('log-auto-sheet-input');
+  const autoSuccess = document.getElementById('log-auto-sheet-success');
   const tabs = document.querySelectorAll('#acc-log .state-tab');
 
   // reset all
-  buttons.style.display = 'none';
-  chatState.style.display = 'none';
+  document.getElementById('log-buttons').style.display = 'none';
+  document.getElementById('log-nap-selected').style.display = 'none';
+  document.getElementById('log-deeplink-selected').style.display = 'none';
+  document.getElementById('log-auto-selected').style.display = 'none';
   sheet.classList.remove('open');
+  autoSheet.classList.remove('open');
   input.style.display = '';
   success.style.display = 'none';
+  autoInput.style.display = '';
+  autoSuccess.style.display = 'none';
   record.style.display = 'none';
 
   if (state === 'buttons') {
-    buttons.style.display = 'flex';
+    document.getElementById('log-buttons').style.display = 'flex';
     tabs.forEach((t, i) => t.className = 'state-tab' + (i === 0 ? ' active' : ''));
-  } else if (state === 'chat') {
-    chatState.style.display = 'flex';
-    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 1 ? ' active' : ''));
   } else if (state === 'sheet') {
-    chatState.style.display = 'flex';
+    document.getElementById('log-nap-selected').style.display = 'flex';
     sheet.classList.add('open');
-    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 2 ? ' active' : ''));
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 1 ? ' active' : ''));
   } else if (state === 'done') {
-    chatState.style.display = 'flex';
+    document.getElementById('log-nap-selected').style.display = 'flex';
     sheet.classList.add('open');
     input.style.display = 'none';
     success.style.display = '';
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 1 ? ' active' : ''));
+    setTimeout(() => { sheet.classList.remove('open'); record.style.display = 'flex'; }, 1200);
+  } else if (state === 'deeplink') {
+    document.getElementById('log-deeplink-selected').style.display = 'flex';
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 2 ? ' active' : ''));
+  } else if (state === 'autosheet') {
+    document.getElementById('log-auto-selected').style.display = 'flex';
+    autoSheet.classList.add('open');
     tabs.forEach((t, i) => t.className = 'state-tab' + (i === 3 ? ' active' : ''));
-    setTimeout(() => {
-      sheet.classList.remove('open');
-      record.style.display = 'flex';
-    }, 1200);
+  } else if (state === 'autodone') {
+    document.getElementById('log-auto-selected').style.display = 'flex';
+    autoSheet.classList.add('open');
+    autoInput.style.display = 'none';
+    autoSuccess.style.display = '';
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 3 ? ' active' : ''));
+    setTimeout(() => { autoSheet.classList.remove('open'); }, 1200);
   }
 }
 
