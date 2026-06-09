@@ -918,8 +918,9 @@
       <div class="mockup-row">
         <div>
           <div class="state-tabs">
-            <button class="state-tab" onclick="setStateLog('chat')">Chat</button>
-            <button class="state-tab active" onclick="setStateLog('sheet')">Sheet open</button>
+            <button class="state-tab active" onclick="setStateLog('buttons')">Buttons</button>
+            <button class="state-tab" onclick="setStateLog('chat')">Log a nap tapped</button>
+            <button class="state-tab" onclick="setStateLog('sheet')">Sheet open</button>
             <button class="state-tab" onclick="setStateLog('done')">Logged</button>
           </div>
 
@@ -930,14 +931,42 @@
             </div>
             <div class="phone-shell">
               <div class="chat-area" style="min-height: 420px;">
-                <div class="user-bubble">she just woke up after a 45 min nap</div>
-                <div class="agent-row">
-                  <div class="agent-avatar">🐣</div>
-                  <div class="agent-bubble-wrap">
-                    <div class="agent-name">Hatch AI</div>
-                    <div class="agent-bubble">That's on the shorter side for this age — 45 min is a common sleep cycle boundary. Want me to log that nap?</div>
+                <div class="user-bubble">how do I log my baby's sleep?</div>
+
+                <!-- Buttons state -->
+                <div id="log-buttons" style="display:flex; flex-direction:column; gap:14px;">
+                  <div class="agent-row">
+                    <div class="agent-avatar">🐣</div>
+                    <div class="agent-bubble-wrap">
+                      <div class="agent-name">Hatch AI</div>
+                      <div class="agent-bubble">Sure — what would you like to do?
+                        <div style="display:flex; flex-direction:column; gap:7px; margin-top:10px;">
+                          <button onclick="setStateLog('chat')" style="background:#1e3d6b; border:1px solid #3dbfb8; color:#d4e4f7; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:600; cursor:pointer; text-align:left;">📝 Log a nap</button>
+                          <button style="background:#1e3d6b; border:1px solid #2a4a6e; color:#d4e4f7; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:600; cursor:pointer; text-align:left;">📊 See my sleep logs</button>
+                          <button style="background:#1e3d6b; border:1px solid #2a4a6e; color:#d4e4f7; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:600; cursor:pointer; text-align:left;">⚙️ Turn on / off auto sleep logging</button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                <!-- After tapping "Log a nap" -->
+                <div id="log-chat-state" style="display:none; flex-direction:column; gap:14px;">
+                  <div class="agent-row">
+                    <div class="agent-avatar">🐣</div>
+                    <div class="agent-bubble-wrap">
+                      <div class="agent-name">Hatch AI</div>
+                      <div class="agent-bubble">Sure — what would you like to do?
+                        <div style="display:flex; flex-direction:column; gap:7px; margin-top:10px;">
+                          <button style="background:#3dbfb8; border:1px solid #3dbfb8; color:#0a1628; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:700; cursor:default; text-align:left;">📝 Log a nap</button>
+                          <button style="background:#1e3d6b; border:1px solid #2a4a6e; color:#4a6580; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:600; cursor:default; text-align:left;">📊 See my sleep logs</button>
+                          <button style="background:#1e3d6b; border:1px solid #2a4a6e; color:#4a6580; border-radius:20px; padding:8px 14px; font-size:12px; font-weight:600; cursor:default; text-align:left;">⚙️ Turn on / off auto sleep logging</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="record-block" id="log-record" style="display:none;">
                   <div class="record-icon">✓</div>
                   <div class="record-text">Nap logged — <strong>45 min</strong>, 2:10 PM</div>
@@ -1097,32 +1126,43 @@ function setStateLog(state) {
   const input = document.getElementById('log-sheet-input');
   const success = document.getElementById('log-sheet-success');
   const record = document.getElementById('log-record');
+  const buttons = document.getElementById('log-buttons');
+  const chatState = document.getElementById('log-chat-state');
   const tabs = document.querySelectorAll('#acc-log .state-tab');
 
-  if (state === 'chat') {
-    sheet.classList.remove('open');
-    input.style.display = '';
-    success.style.display = 'none';
-    record.style.display = 'none';
+  // reset all
+  buttons.style.display = 'none';
+  chatState.style.display = 'none';
+  sheet.classList.remove('open');
+  input.style.display = '';
+  success.style.display = 'none';
+  record.style.display = 'none';
+
+  if (state === 'buttons') {
+    buttons.style.display = 'flex';
     tabs.forEach((t, i) => t.className = 'state-tab' + (i === 0 ? ' active' : ''));
-  } else if (state === 'sheet') {
-    sheet.classList.add('open');
-    input.style.display = '';
-    success.style.display = 'none';
-    record.style.display = 'none';
+  } else if (state === 'chat') {
+    chatState.style.display = 'flex';
     tabs.forEach((t, i) => t.className = 'state-tab' + (i === 1 ? ' active' : ''));
+  } else if (state === 'sheet') {
+    chatState.style.display = 'flex';
+    sheet.classList.add('open');
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 2 ? ' active' : ''));
   } else if (state === 'done') {
+    chatState.style.display = 'flex';
     sheet.classList.add('open');
     input.style.display = 'none';
     success.style.display = '';
-    record.style.display = 'none';
-    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 2 ? ' active' : ''));
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 3 ? ' active' : ''));
     setTimeout(() => {
       sheet.classList.remove('open');
       record.style.display = 'flex';
     }, 1200);
   }
 }
+
+/* Init sleep log to buttons state */
+setStateLog('buttons');
 
 /* Init: open first accordion's sheet state */
 setStateClock('sheet');
