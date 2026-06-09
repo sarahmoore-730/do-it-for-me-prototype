@@ -670,9 +670,9 @@
 
                   <div class="hs-setting-row">
                     <div class="hs-setting-label">Clock Display</div>
-                    <div style="display:flex; align-items:center; gap:6px;">
-                      <span class="hs-toggle-state">On</span>
-                      <div class="hs-toggle"></div>
+                    <div style="display:flex; align-items:center; gap:6px; cursor:pointer;" onclick="toggleClockDisplay()">
+                      <span class="hs-toggle-state" id="clock-toggle-label">On</span>
+                      <div class="hs-toggle" id="clock-toggle"></div>
                     </div>
                   </div>
 
@@ -1236,6 +1236,23 @@ function setStateLog(state) {
     autoSuccess.style.display = '';
     tabs.forEach((t, i) => t.className = 'state-tab' + (i === 4 ? ' active' : ''));
     setTimeout(() => { autoSheet.classList.remove('open'); }, 1200);
+  }
+}
+
+/* Clock display toggle */
+let clockDisplayOn = true;
+function toggleClockDisplay() {
+  clockDisplayOn = !clockDisplayOn;
+  const label = document.getElementById('clock-toggle-label');
+  const toggle = document.getElementById('clock-toggle');
+  if (clockDisplayOn) {
+    label.textContent = 'On';
+    label.style.color = '#3dbfb8';
+    toggle.classList.remove('off');
+  } else {
+    label.textContent = 'Off';
+    label.style.color = '#9a8a75';
+    toggle.classList.add('off');
   }
 }
 
