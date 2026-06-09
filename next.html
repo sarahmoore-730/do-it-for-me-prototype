@@ -918,7 +918,8 @@
       <div class="mockup-row">
         <div>
           <div class="state-tabs">
-            <button class="state-tab active" onclick="setStateLog('buttons')">Buttons</button>
+            <button class="state-tab active" onclick="setStateLog('user')">User asks</button>
+            <button class="state-tab" onclick="setStateLog('buttons')">Buttons</button>
             <button class="state-tab" onclick="setStateLog('sheet')">→ Log a nap</button>
             <button class="state-tab" onclick="setStateLog('deeplink')">→ See sleep logs</button>
             <button class="state-tab" onclick="setStateLog('autosheet')">→ Auto logging</button>
@@ -1205,39 +1206,41 @@ function setStateLog(state) {
   autoSuccess.style.display = 'none';
   record.style.display = 'none';
 
-  if (state === 'buttons') {
-    document.getElementById('log-buttons').style.display = 'flex';
+  if (state === 'user') {
     tabs.forEach((t, i) => t.className = 'state-tab' + (i === 0 ? ' active' : ''));
+  } else if (state === 'buttons') {
+    document.getElementById('log-buttons').style.display = 'flex';
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 1 ? ' active' : ''));
   } else if (state === 'sheet') {
     document.getElementById('log-nap-selected').style.display = 'flex';
     sheet.classList.add('open');
-    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 1 ? ' active' : ''));
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 2 ? ' active' : ''));
   } else if (state === 'done') {
     document.getElementById('log-nap-selected').style.display = 'flex';
     sheet.classList.add('open');
     input.style.display = 'none';
     success.style.display = '';
-    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 1 ? ' active' : ''));
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 2 ? ' active' : ''));
     setTimeout(() => { sheet.classList.remove('open'); record.style.display = 'flex'; }, 1200);
   } else if (state === 'deeplink') {
     document.getElementById('log-deeplink-selected').style.display = 'flex';
-    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 2 ? ' active' : ''));
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 3 ? ' active' : ''));
   } else if (state === 'autosheet') {
     document.getElementById('log-auto-selected').style.display = 'flex';
     autoSheet.classList.add('open');
-    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 3 ? ' active' : ''));
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 4 ? ' active' : ''));
   } else if (state === 'autodone') {
     document.getElementById('log-auto-selected').style.display = 'flex';
     autoSheet.classList.add('open');
     autoInput.style.display = 'none';
     autoSuccess.style.display = '';
-    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 3 ? ' active' : ''));
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 4 ? ' active' : ''));
     setTimeout(() => { autoSheet.classList.remove('open'); }, 1200);
   }
 }
 
-/* Init sleep log to buttons state */
-setStateLog('buttons');
+/* Init sleep log to user asks state */
+setStateLog('user');
 
 /* Init: open first accordion's sheet state */
 setStateClock('sheet');
