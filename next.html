@@ -382,10 +382,41 @@
     border-bottom: 1px solid #ddd0be;
   }
 
-  .hs-slider-arrow {
-    font-size: 12px;
-    color: #9a8a75;
+  .hs-slider-end {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hs-slider-end.dim {
+    font-size: 12px;
+    opacity: 0.4;
+    color: #0d1f35;
+  }
+
+  .hs-slider-end.bright {
+    font-size: 20px;
+    opacity: 1;
+    color: #c8a96e;
+  }
+
+  .hs-toggle-state {
+    font-size: 11px;
+    font-weight: 700;
+    color: #3dbfb8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: 8px;
+  }
+
+  .hs-toggle.off {
+    background: #c8b89a;
+  }
+
+  .hs-toggle.off::after {
+    right: auto;
+    left: 3px;
   }
 
   .hs-slider-track {
@@ -639,16 +670,19 @@
 
                   <div class="hs-setting-row">
                     <div class="hs-setting-label">Clock Display</div>
-                    <div class="hs-toggle"></div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                      <span class="hs-toggle-state">On</span>
+                      <div class="hs-toggle"></div>
+                    </div>
                   </div>
 
                   <div class="hs-slider-row">
-                    <div class="hs-slider-arrow">◀</div>
+                    <div class="hs-slider-end dim">☀</div>
                     <div class="hs-slider-track">
                       <div class="hs-slider-fill"></div>
                       <div class="hs-slider-thumb">☀</div>
                     </div>
-                    <div class="hs-slider-arrow">▶</div>
+                    <div class="hs-slider-end bright">☀</div>
                   </div>
 
                   <button class="half-sheet-btn" style="margin-top: 8px;" onclick="setStateClock('done')">Apply</button>
