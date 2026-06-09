@@ -1023,12 +1023,12 @@
                   <div class="half-sheet-sub">Automatically log sleep based on when your Hatch turns on and off.</div>
                   <div class="hs-setting-row" style="margin-bottom: 20px;">
                     <div class="hs-setting-label">Auto sleep logging</div>
-                    <div style="display:flex; align-items:center; gap:6px;">
-                      <span class="hs-toggle-state">Off</span>
-                      <div class="hs-toggle off"></div>
+                    <div style="display:flex; align-items:center; gap:6px;" onclick="toggleAutoLogging()" style="cursor:pointer;">
+                      <span class="hs-toggle-state" id="auto-toggle-label">Off</span>
+                      <div class="hs-toggle off" id="auto-toggle"></div>
                     </div>
                   </div>
-                  <button class="half-sheet-btn" onclick="setStateLog('autodone')">Turn On</button>
+                  <button class="half-sheet-btn" id="auto-toggle-btn" onclick="setStateLog('autodone')">Turn On</button>
                   <button class="half-sheet-cancel" onclick="setStateLog('autosheet')">Cancel</button>
                 </div>
                 <div id="log-auto-sheet-success" style="display:none; text-align:center; padding: 10px 0 4px;">
@@ -1236,6 +1236,26 @@ function setStateLog(state) {
     autoSuccess.style.display = '';
     tabs.forEach((t, i) => t.className = 'state-tab' + (i === 4 ? ' active' : ''));
     setTimeout(() => { autoSheet.classList.remove('open'); }, 1200);
+  }
+}
+
+/* Auto logging toggle */
+let autoLoggingOn = false;
+function toggleAutoLogging() {
+  autoLoggingOn = !autoLoggingOn;
+  const label = document.getElementById('auto-toggle-label');
+  const toggle = document.getElementById('auto-toggle');
+  const btn = document.getElementById('auto-toggle-btn');
+  if (autoLoggingOn) {
+    label.textContent = 'On';
+    label.style.color = '#3dbfb8';
+    toggle.classList.remove('off');
+    btn.textContent = 'Turn Off';
+  } else {
+    label.textContent = 'Off';
+    label.style.color = '#9a8a75';
+    toggle.classList.add('off');
+    btn.textContent = 'Turn On';
   }
 }
 
