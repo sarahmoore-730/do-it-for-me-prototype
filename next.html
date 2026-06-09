@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Do It For Me — Up Next</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f5ede0;
+    color: #1a2a3a;
+    min-height: 100vh;
+    padding: 24px 16px 80px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 15px;
+    color: #7a6a55;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: #9a8a75;
+    margin-bottom: 40px;
+  }
+
+  /* ── Accordion ── */
+  .accordion {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .accordion-item {
+    background: #fff8f0;
+    border: 1.5px solid #ddd0be;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .accordion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+    gap: 16px;
+  }
+
+  .accordion-header:hover { background: #f5ede0; }
+
+  .accordion-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .accordion-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #c8a96e;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    min-width: 24px;
+  }
+
+  .accordion-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0d1f35;
+  }
+
+  .accordion-tag {
+    font-size: 11px;
+    color: #2a9a94;
+    background: #e0f5f4;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .accordion-arrow {
+    font-size: 11px;
+    color: #9a8a75;
+    transition: transform 0.25s;
+    flex-shrink: 0;
+  }
+
+  .accordion-item.open .accordion-arrow {
+    transform: rotate(180deg);
+  }
+
+  .accordion-body {
+    display: none;
+    padding: 0 24px 28px;
+    border-top: 1px solid #e8ddd0;
+  }
+
+  .accordion-item.open .accordion-body {
+    display: block;
+  }
+
+  .accordion-desc {
+    font-size: 13px;
+    color: #6a7a8a;
+    line-height: 1.6;
+    margin: 20px 0 28px;
+    max-width: 560px;
+  }
+
+  /* ── Layout inside accordion ── */
+  .mockup-row {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* ── Phone shell ── */
+  .phone {
+    width: 300px;
+    flex-shrink: 0;
+    background: #0d1f35;
+    border-radius: 36px;
+    border: 2px solid #1e3a5a;
+    overflow: hidden;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+  }
+
+  .phone-top {
+    background: #0d1f35;
+    padding: 14px 20px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1a3050;
+  }
+
+  .phone-top-title {
+    font-size: 13px;
+    color: #c8a96e;
+    font-style: italic;
+    font-weight: 600;
+  }
+
+  .phone-top-icons {
+    display: flex;
+    gap: 12px;
+    color: #4a6580;
+    font-size: 16px;
+  }
+
+  .chat-area {
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 440px;
+  }
+
+  .agent-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .agent-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c8a96e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .agent-bubble-wrap { flex: 1; }
+
+  .agent-name {
+    font-size: 10px;
+    color: #c8a96e;
+    font-style: italic;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .agent-bubble {
+    background: #152a45;
+    border-radius: 4px 14px 14px 14px;
+    padding: 10px 13px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #d4e4f7;
+  }
+
+  .user-bubble {
+    background: #1e3d6b;
+    border-radius: 14px 4px 14px 14px;
+    padding: 10px 13px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #d4e4f7;
+    align-self: flex-end;
+    max-width: 80%;
+  }
+
+  .success-bubble {
+    background: #0e2e20;
+    border: 1px solid #1a5c38;
+    border-radius: 4px 14px 14px 14px;
+    padding: 10px 13px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #4ecf8a;
+  }
+
+  /* ── Half-sheet ── */
+  .phone-shell {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 0 34px 34px;
+  }
+
+  .half-sheet {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: #f5ede0;
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px 28px;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    z-index: 10;
+  }
+
+  .half-sheet.open { transform: translateY(0); }
+
+  .half-sheet-handle {
+    width: 36px; height: 4px;
+    background: #c8b89a;
+    border-radius: 2px;
+    margin: 0 auto 18px;
+  }
+
+  .half-sheet-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0d1f35;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .half-sheet-sub {
+    font-size: 13px;
+    color: #6a7a8a;
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+
+  .half-sheet-input {
+    width: 100%;
+    background: #e8ddd0;
+    border: 1.5px solid #c8b89a;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #0d1f35;
+    margin-bottom: 12px;
+    outline: none;
+  }
+
+  .half-sheet-input.has-value {
+    border-color: #3dbfb8;
+    background: #fff;
+  }
+
+  .half-sheet-btn {
+    width: 100%;
+    background: #0d1f35;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+
+  .half-sheet-cancel {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #8a9aaa;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .hs-check {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    border: 2px solid #3dbfb8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+    font-size: 22px;
+    color: #3dbfb8;
+  }
+
+  .hs-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #0d1f35;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .hs-body {
+    font-size: 13px;
+    color: #6a7a8a;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  /* ── Option toggle controls ── */
+  .option-strip {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .option-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #e8ddd0;
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
+
+  .option-row-label {
+    font-size: 13px;
+    color: #0d1f35;
+    font-weight: 600;
+  }
+
+  .option-row-value {
+    font-size: 13px;
+    color: #2a9a94;
+    font-weight: 700;
+  }
+
+  /* ── Reply bar ── */
+  .reply-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-top: 1px solid #1a3050;
+    background: #0d1f35;
+  }
+
+  .reply-input {
+    flex: 1;
+    background: #152a45;
+    border: 1px solid #1e3a5a;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #4a6580;
+  }
+
+  .reply-btn {
+    width: 32px; height: 32px;
+    background: #2a5aaa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+  }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 10px;
+    color: #2a4a6e;
+    padding: 6px 12px 12px;
+  }
+
+  /* ── State tabs ── */
+  .state-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .state-tab {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid #c4b4a0;
+    color: #8a7a6a;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  .state-tab.active {
+    background: #2a9a94;
+    color: #fff;
+    border-color: #2a9a94;
+    font-weight: 700;
+  }
+
+  .state { display: none; }
+  .state.visible { display: flex; flex-direction: column; gap: 14px; }
+
+  /* ── Notes panel ── */
+  .notes-panel {
+    flex: 1;
+    min-width: 240px;
+    padding-top: 8px;
+  }
+
+  .notes-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #2a9a94;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+
+  .notes-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .notes-list li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-size: 13px;
+    color: #3a4a5a;
+    line-height: 1.5;
+  }
+
+  .notes-list li::before {
+    content: '→';
+    color: #2a9a94;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .record-block {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #0f2540;
+    border: 1px solid #1e3a5a;
+    border-radius: 10px;
+    padding: 10px 13px;
+    font-size: 12px;
+    color: #6a8aaa;
+  }
+
+  .record-icon { font-size: 14px; flex-shrink: 0; }
+  .record-text strong { color: #d4e4f7; font-weight: 600; }
+
+  /* ── Sleep log rows ── */
+  .log-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .log-field-label {
+    font-size: 11px;
+    color: #8a9aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+
+  .log-field {
+    background: #e8ddd0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #0d1f35;
+    font-weight: 600;
+    border: 1.5px solid #3dbfb8;
+  }
+
+  /* ── Back link ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #9a8a75;
+    text-decoration: none;
+    margin-bottom: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .back-link:hover { color: #6a5a45; }
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-link">← Back</a>
+
+<h1>Do It For Me — Up Next</h1>
+<p class="subtitle">Three potential use cases to explore</p>
+
+<div class="accordion">
+
+  <!-- ══════════════════════════════════════════════
+       1. CLOCK DISPLAY
+  ══════════════════════════════════════════════ -->
+  <div class="accordion-item open" id="acc-clock">
+    <div class="accordion-header" onclick="toggleAccordion('clock')">
+      <div class="accordion-header-left">
+        <div class="accordion-num">01</div>
+        <div class="accordion-title">Clock Display</div>
+        <div class="accordion-tag">Settings</div>
+      </div>
+      <div class="accordion-arrow">▼</div>
+    </div>
+    <div class="accordion-body">
+      <p class="accordion-desc">Users frequently ask how to change what shows on their Hatch clock face — time format, brightness, or display mode. Instead of explaining the steps, Baby Agent surfaces a half-sheet and adjusts the setting directly.</p>
+
+      <div class="mockup-row">
+        <div>
+          <div class="state-tabs">
+            <button class="state-tab" onclick="setStateClock('chat')">Chat</button>
+            <button class="state-tab active" onclick="setStateClock('sheet')">Sheet open</button>
+            <button class="state-tab" onclick="setStateClock('done')">Done</button>
+          </div>
+
+          <div class="phone">
+            <div class="phone-top">
+              <div class="phone-top-title">Hatch AI</div>
+              <div class="phone-top-icons">⊕ ⊙ ✕</div>
+            </div>
+            <div class="phone-shell">
+              <div class="chat-area" style="min-height: 420px;">
+                <div class="user-bubble">can you change my clock display?</div>
+                <div class="record-block" id="clock-record" style="display:none;">
+                  <div class="record-icon">✓</div>
+                  <div class="record-text">Clock display updated to <strong>time only · dim</strong></div>
+                </div>
+              </div>
+              <div class="reply-bar">
+                <div class="reply-input">Reply…</div>
+                <div class="reply-btn">↑</div>
+              </div>
+              <div class="half-sheet open" id="clock-sheet">
+                <div class="half-sheet-handle"></div>
+                <div id="clock-sheet-input">
+                  <div class="half-sheet-title">Clock Display</div>
+                  <div class="half-sheet-sub">Choose what appears on your Hatch clock face.</div>
+                  <div class="option-strip">
+                    <div class="option-row">
+                      <div class="option-row-label">Display</div>
+                      <div class="option-row-value">Time only ▾</div>
+                    </div>
+                    <div class="option-row">
+                      <div class="option-row-label">Brightness</div>
+                      <div class="option-row-value">Dim ▾</div>
+                    </div>
+                  </div>
+                  <button class="half-sheet-btn" onclick="setStateClock('done')">Save Changes</button>
+                  <button class="half-sheet-cancel" onclick="setStateClock('chat')">Cancel</button>
+                </div>
+                <div id="clock-sheet-success" style="display:none; text-align:center; padding: 10px 0 4px;">
+                  <div class="hs-check">✓</div>
+                  <div class="hs-title">Display updated.</div>
+                  <div class="hs-body">Your clock now shows time only at dim brightness.</div>
+                </div>
+              </div>
+            </div>
+            <div class="disclaimer">AI can make mistakes — verify important information</div>
+          </div>
+        </div>
+
+        <div class="notes-panel">
+          <div class="notes-label">Questions to work out</div>
+          <ul class="notes-list">
+            <li>What display settings does the API actually expose? Time, brightness, color?</li>
+            <li>Does this vary by device (Rest, Restore, Riot)?</li>
+            <li>Should the sheet pre-populate current settings or start blank?</li>
+            <li>What happens if the clock is offline?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       2. OPEN THE MINI PLAYER
+  ══════════════════════════════════════════════ -->
+  <div class="accordion-item" id="acc-player">
+    <div class="accordion-header" onclick="toggleAccordion('player')">
+      <div class="accordion-header-left">
+        <div class="accordion-num">02</div>
+        <div class="accordion-title">Open the Mini Player</div>
+        <div class="accordion-tag">Navigation</div>
+      </div>
+      <div class="accordion-arrow">▼</div>
+    </div>
+    <div class="accordion-body">
+      <p class="accordion-desc">When a parent asks about adjusting sounds or light during a session, they often don't know the mini player exists. Instead of explaining how to find it, Baby Agent deep-links them directly into the mini player from chat.</p>
+
+      <div class="mockup-row">
+        <div>
+          <div class="state-tabs">
+            <button class="state-tab active" onclick="setStatePlayer('chat')">Chat</button>
+            <button class="state-tab" onclick="setStatePlayer('done')">Tapped</button>
+          </div>
+
+          <div class="phone">
+            <div class="phone-top">
+              <div class="phone-top-title">Hatch AI</div>
+              <div class="phone-top-icons">⊕ ⊙ ✕</div>
+            </div>
+            <div class="chat-area" style="min-height: 420px;">
+              <div class="user-bubble">how do I adjust the sound volume?</div>
+
+              <div id="player-chat" class="state visible">
+                <div class="agent-row">
+                  <div class="agent-avatar">🐣</div>
+                  <div class="agent-bubble-wrap">
+                    <div class="agent-name">Hatch AI</div>
+                    <div class="agent-bubble">You can adjust it right now with the mini player — I'll open it for you.
+                      <div style="margin-top: 10px; background: #0f2540; border: 1px solid #3dbfb8; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="setStatePlayer('done')">
+                        <div style="font-size: 18px;">🎵</div>
+                        <div>
+                          <div style="font-size: 12px; font-weight: 700; color: #d4e4f7;">Open Mini Player</div>
+                          <div style="font-size: 11px; color: #6a8aaa;">Adjust sound &amp; light for this session</div>
+                        </div>
+                        <div style="margin-left: auto; color: #3dbfb8; font-size: 14px;">→</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="player-done" class="state">
+                <div class="agent-row">
+                  <div class="agent-avatar">🐣</div>
+                  <div class="agent-bubble-wrap">
+                    <div class="agent-name">Hatch AI</div>
+                    <div class="agent-bubble">You can adjust it right now with the mini player — I'll open it for you.
+                      <div style="margin-top: 10px; background: #0f2540; border: 1px solid #3dbfb8; border-radius: 10px; padding: 12px 14px; display: flex; align-items: center; gap: 10px;">
+                        <div style="font-size: 18px;">🎵</div>
+                        <div>
+                          <div style="font-size: 12px; font-weight: 700; color: #d4e4f7;">Open Mini Player</div>
+                          <div style="font-size: 11px; color: #6a8aaa;">Adjust sound &amp; light for this session</div>
+                        </div>
+                        <div style="margin-left: auto; color: #3dbfb8; font-size: 14px;">→</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="record-block">
+                  <div class="record-icon">✓</div>
+                  <div class="record-text">Mini player opened</div>
+                </div>
+              </div>
+            </div>
+            <div class="reply-bar">
+              <div class="reply-input">Reply…</div>
+              <div class="reply-btn">↑</div>
+            </div>
+            <div class="disclaimer">AI can make mistakes — verify important information</div>
+          </div>
+        </div>
+
+        <div class="notes-panel">
+          <div class="notes-label">Questions to work out</div>
+          <ul class="notes-list">
+            <li>Does a deep-link API to the mini player exist, or would this be a new capability?</li>
+            <li>What if no session is currently active — what does the mini player show?</li>
+            <li>This is navigation, not action — does "Do It For Me" still apply, or is it closer to "Take Me There"?</li>
+            <li>Should the record message appear in chat, or is the tap itself enough?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       3. SLEEP LOGGING
+  ══════════════════════════════════════════════ -->
+  <div class="accordion-item" id="acc-log">
+    <div class="accordion-header" onclick="toggleAccordion('log')">
+      <div class="accordion-header-left">
+        <div class="accordion-num">03</div>
+        <div class="accordion-title">Sleep Logging</div>
+        <div class="accordion-tag">Data entry</div>
+      </div>
+      <div class="accordion-arrow">▼</div>
+    </div>
+    <div class="accordion-body">
+      <p class="accordion-desc">Parents often report sleep times during a chat conversation — "she just woke up after 45 minutes." Baby Agent can capture that as a log entry without the parent ever leaving the chat, and confirm what was recorded.</p>
+
+      <div class="mockup-row">
+        <div>
+          <div class="state-tabs">
+            <button class="state-tab" onclick="setStateLog('chat')">Chat</button>
+            <button class="state-tab active" onclick="setStateLog('sheet')">Sheet open</button>
+            <button class="state-tab" onclick="setStateLog('done')">Logged</button>
+          </div>
+
+          <div class="phone">
+            <div class="phone-top">
+              <div class="phone-top-title">Hatch AI</div>
+              <div class="phone-top-icons">⊕ ⊙ ✕</div>
+            </div>
+            <div class="phone-shell">
+              <div class="chat-area" style="min-height: 420px;">
+                <div class="user-bubble">she just woke up after a 45 min nap</div>
+                <div class="agent-row">
+                  <div class="agent-avatar">🐣</div>
+                  <div class="agent-bubble-wrap">
+                    <div class="agent-name">Hatch AI</div>
+                    <div class="agent-bubble">That's on the shorter side for this age — 45 min is a common sleep cycle boundary. Want me to log that nap?</div>
+                  </div>
+                </div>
+                <div class="record-block" id="log-record" style="display:none;">
+                  <div class="record-icon">✓</div>
+                  <div class="record-text">Nap logged — <strong>45 min</strong>, 2:10 PM</div>
+                </div>
+              </div>
+              <div class="reply-bar">
+                <div class="reply-input">Reply…</div>
+                <div class="reply-btn">↑</div>
+              </div>
+              <div class="half-sheet" id="log-sheet">
+                <div class="half-sheet-handle"></div>
+                <div id="log-sheet-input">
+                  <div class="half-sheet-title">Log This Nap</div>
+                  <div class="half-sheet-sub">Confirm the details and we'll save it.</div>
+                  <div class="log-row">
+                    <div class="log-field-label">Duration</div>
+                    <div class="log-field">45 minutes</div>
+                  </div>
+                  <div class="log-row">
+                    <div class="log-field-label">End time</div>
+                    <div class="log-field">2:10 PM</div>
+                  </div>
+                  <div class="log-row">
+                    <div class="log-field-label">Type</div>
+                    <div class="log-field">Nap</div>
+                  </div>
+                  <button class="half-sheet-btn" style="margin-top: 4px;" onclick="setStateLog('done')">Save Log</button>
+                  <button class="half-sheet-cancel" onclick="setStateLog('chat')">Cancel</button>
+                </div>
+                <div id="log-sheet-success" style="display:none; text-align:center; padding: 10px 0 4px;">
+                  <div class="hs-check">✓</div>
+                  <div class="hs-title">Nap logged.</div>
+                  <div class="hs-body">45 minutes ending at 2:10 PM has been saved to your sleep log.</div>
+                </div>
+              </div>
+            </div>
+            <div class="disclaimer">AI can make mistakes — verify important information</div>
+          </div>
+        </div>
+
+        <div class="notes-panel">
+          <div class="notes-label">Questions to work out</div>
+          <ul class="notes-list">
+            <li>Does a sleep logging API exist today, or is this net-new backend work?</li>
+            <li>How does Baby Agent infer start time if only duration is mentioned?</li>
+            <li>Should this trigger proactively (agent detects the mention) or only if user says "log it"?</li>
+            <li>What if the parent mentions sleep in passing — how do we avoid over-triggering?</li>
+            <li>Where do logs surface in the app — is there a log view parents already use?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /accordion -->
+
+<a href="index.html" style="
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0d1f35;
+  color: #c8a96e;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 24px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  letter-spacing: 0.3px;
+  z-index: 100;
+">← Back to Caregiver</a>
+
+<script>
+function toggleAccordion(id) {
+  const item = document.getElementById('acc-' + id);
+  item.classList.toggle('open');
+}
+
+/* ── Clock Display ── */
+function setStateClock(state) {
+  const sheet = document.getElementById('clock-sheet');
+  const input = document.getElementById('clock-sheet-input');
+  const success = document.getElementById('clock-sheet-success');
+  const record = document.getElementById('clock-record');
+  const tabs = document.querySelectorAll('#acc-clock .state-tab');
+
+  if (state === 'chat') {
+    sheet.classList.remove('open');
+    input.style.display = '';
+    success.style.display = 'none';
+    record.style.display = 'none';
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 0 ? ' active' : ''));
+  } else if (state === 'sheet') {
+    sheet.classList.add('open');
+    input.style.display = '';
+    success.style.display = 'none';
+    record.style.display = 'none';
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 1 ? ' active' : ''));
+  } else if (state === 'done') {
+    sheet.classList.add('open');
+    input.style.display = 'none';
+    success.style.display = '';
+    record.style.display = 'none';
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 2 ? ' active' : ''));
+    setTimeout(() => {
+      sheet.classList.remove('open');
+      record.style.display = 'flex';
+    }, 1200);
+  }
+}
+
+/* ── Mini Player ── */
+function setStatePlayer(state) {
+  document.getElementById('player-chat').className = 'state' + (state === 'chat' ? ' visible' : '');
+  document.getElementById('player-done').className = 'state' + (state === 'done' ? ' visible' : '');
+  const tabs = document.querySelectorAll('#acc-player .state-tab');
+  tabs.forEach((t, i) => t.className = 'state-tab' + (i === (state === 'chat' ? 0 : 1) ? ' active' : ''));
+}
+
+/* ── Sleep Log ── */
+function setStateLog(state) {
+  const sheet = document.getElementById('log-sheet');
+  const input = document.getElementById('log-sheet-input');
+  const success = document.getElementById('log-sheet-success');
+  const record = document.getElementById('log-record');
+  const tabs = document.querySelectorAll('#acc-log .state-tab');
+
+  if (state === 'chat') {
+    sheet.classList.remove('open');
+    input.style.display = '';
+    success.style.display = 'none';
+    record.style.display = 'none';
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 0 ? ' active' : ''));
+  } else if (state === 'sheet') {
+    sheet.classList.add('open');
+    input.style.display = '';
+    success.style.display = 'none';
+    record.style.display = 'none';
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 1 ? ' active' : ''));
+  } else if (state === 'done') {
+    sheet.classList.add('open');
+    input.style.display = 'none';
+    success.style.display = '';
+    record.style.display = 'none';
+    tabs.forEach((t, i) => t.className = 'state-tab' + (i === 2 ? ' active' : ''));
+    setTimeout(() => {
+      sheet.classList.remove('open');
+      record.style.display = 'flex';
+    }, 1200);
+  }
+}
+
+/* Init: open first accordion's sheet state */
+setStateClock('sheet');
+setStateLog('sheet');
+</script>
+
+</body>
+</html>
