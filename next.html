@@ -338,32 +338,85 @@
   }
 
   /* ── Option toggle controls ── */
-  .option-strip {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .option-row {
+  /* ── Toggle row (matches app style) ── */
+  .hs-setting-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: #e8ddd0;
-    border-radius: 10px;
-    padding: 10px 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid #ddd0be;
   }
 
-  .option-row-label {
-    font-size: 13px;
-    color: #0d1f35;
+  .hs-setting-label {
+    font-size: 14px;
     font-weight: 600;
+    color: #0d1f35;
   }
 
-  .option-row-value {
+  .hs-toggle {
+    width: 44px;
+    height: 26px;
+    background: #3dbfb8;
+    border-radius: 13px;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .hs-toggle::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border-radius: 50%;
+  }
+
+  /* ── Brightness slider (matches app style) ── */
+  .hs-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 0;
+    border-bottom: 1px solid #ddd0be;
+  }
+
+  .hs-slider-arrow {
+    font-size: 12px;
+    color: #9a8a75;
+    flex-shrink: 0;
+  }
+
+  .hs-slider-track {
+    flex: 1;
+    height: 4px;
+    background: #ddd0be;
+    border-radius: 2px;
+    position: relative;
+  }
+
+  .hs-slider-fill {
+    width: 28%;
+    height: 100%;
+    background: #fff;
+    border-radius: 2px;
+  }
+
+  .hs-slider-thumb {
+    width: 28px;
+    height: 28px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 28%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 13px;
-    color: #2a9a94;
-    font-weight: 700;
   }
 
   /* ── Reply bar ── */
@@ -545,13 +598,13 @@
     <div class="accordion-header" onclick="toggleAccordion('clock')">
       <div class="accordion-header-left">
         <div class="accordion-num">01</div>
-        <div class="accordion-title">Clock Display</div>
+        <div class="accordion-title">Turn Down Light in Clock</div>
         <div class="accordion-tag">Settings</div>
       </div>
       <div class="accordion-arrow">▼</div>
     </div>
     <div class="accordion-body">
-      <p class="accordion-desc">Users frequently ask how to change what shows on their Hatch clock face — time format, brightness, or display mode. Instead of explaining the steps, Baby Agent surfaces a half-sheet and adjusts the setting directly.</p>
+      <p class="accordion-desc">One of the most common questions: how do I dim, turn on, or turn off the light on my clock? Instead of explaining where to find it, Baby Agent surfaces a half-sheet with the three light controls and adjusts it directly.</p>
 
       <div class="mockup-row">
         <div>
@@ -568,10 +621,10 @@
             </div>
             <div class="phone-shell">
               <div class="chat-area" style="min-height: 420px;">
-                <div class="user-bubble">can you change my clock display?</div>
+                <div class="user-bubble">how do I turn down the light on my clock?</div>
                 <div class="record-block" id="clock-record" style="display:none;">
                   <div class="record-icon">✓</div>
-                  <div class="record-text">Clock display updated to <strong>time only · dim</strong></div>
+                  <div class="record-text">Clock light set to <strong>dim</strong></div>
                 </div>
               </div>
               <div class="reply-bar">
@@ -582,24 +635,29 @@
                 <div class="half-sheet-handle"></div>
                 <div id="clock-sheet-input">
                   <div class="half-sheet-title">Clock Display</div>
-                  <div class="half-sheet-sub">Choose what appears on your Hatch clock face.</div>
-                  <div class="option-strip">
-                    <div class="option-row">
-                      <div class="option-row-label">Display</div>
-                      <div class="option-row-value">Time only ▾</div>
-                    </div>
-                    <div class="option-row">
-                      <div class="option-row-label">Brightness</div>
-                      <div class="option-row-value">Dim ▾</div>
-                    </div>
+                  <div class="half-sheet-sub">Show the time on your Hatch.</div>
+
+                  <div class="hs-setting-row">
+                    <div class="hs-setting-label">Clock Display</div>
+                    <div class="hs-toggle"></div>
                   </div>
-                  <button class="half-sheet-btn" onclick="setStateClock('done')">Save Changes</button>
+
+                  <div class="hs-slider-row">
+                    <div class="hs-slider-arrow">◀</div>
+                    <div class="hs-slider-track">
+                      <div class="hs-slider-fill"></div>
+                      <div class="hs-slider-thumb">☀</div>
+                    </div>
+                    <div class="hs-slider-arrow">▶</div>
+                  </div>
+
+                  <button class="half-sheet-btn" style="margin-top: 8px;" onclick="setStateClock('done')">Apply</button>
                   <button class="half-sheet-cancel" onclick="setStateClock('chat')">Cancel</button>
                 </div>
                 <div id="clock-sheet-success" style="display:none; text-align:center; padding: 10px 0 4px;">
                   <div class="hs-check">✓</div>
-                  <div class="hs-title">Display updated.</div>
-                  <div class="hs-body">Your clock now shows time only at dim brightness.</div>
+                  <div class="hs-title">Light dimmed.</div>
+                  <div class="hs-body">Your Hatch clock light has been turned down.</div>
                 </div>
               </div>
             </div>
@@ -608,6 +666,13 @@
         </div>
 
         <div class="notes-panel">
+          <div class="notes-label">Ways people ask it</div>
+          <ul class="notes-list" style="margin-bottom: 24px;">
+            <li>how do I turn down the light on my clock?</li>
+            <li>how to turn off clock display</li>
+            <li>can I turn off clock</li>
+          </ul>
+
           <div class="notes-label">Questions to work out</div>
           <ul class="notes-list">
             <li>What display settings does the API actually expose? Time, brightness, color?</li>
